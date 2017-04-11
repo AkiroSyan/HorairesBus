@@ -23,6 +23,26 @@ class BusLine {
     }
   }
 
+  private void load() {
+    this.line = new JSONObject[2];
+    this.url = "http://data.metromobilite.fr/api/ficheHoraires/json?route=SEM:" + this.line_id;
+
+    this.stops = new JSONObject[2][];
+    this.stops_names = new String[2][];
+
+    for (int j = 0; j < 2; j++) {
+      this.line[j] = loadJSONObject(this.url).getJSONObject(str(j));
+
+      this.stops[j] = new JSONObject[this.line[j].getJSONArray("arrets").size()];
+      this.stops_names[j] = new String[this.line[j].getJSONArray("arrets").size()];
+
+      for (int i = 0; i < this.stops[j].length; i++) {
+        this.stops[j][i] = this.line[j].getJSONArray("arrets").getJSONObject(i);
+        this.stops_names[j][i] = this.line[j].getJSONArray("arrets").getJSONObject(i).getString("stopName");
+      }
+    }
+  }
+
   public void updateLines() throws NullPointerException {
     lines = loadJSONArray("http://data.metromobilite.fr/api/routers/default/index/routes");
     StringList lines_buffer = new StringList();
@@ -41,6 +61,14 @@ class BusLine {
   public String[] getLines() {
     return this.lines_ids;
   }
+  
+  public String[] listStops(int direction) {
+    if (direction < this.stops_names.length) {
+      return this.stops_names[direction];
+    } else {
+      return this.stops_names[0];
+    }
+  }
 
   public JSONObject getStop(int direction, String name) {
     if ((direction == 0 || direction == 1) && this.contains(this.stops_names[direction], name)) {
@@ -56,9 +84,9 @@ class BusLine {
     return new JSONObject();
   }
 
-  public JSONArray nextBus(){
+  public JSONArray nextBus() {
     if (this.chosen_stop != null && this.chosen_stop_genid != "") {
-      
+
       JSONArray stops_times_obj = new JSONArray();
 
       try {
@@ -105,34 +133,6 @@ class BusLine {
       return this.stops_times;
     } else {
       return new JSONArray();
-    }
-  }
-
-  private void load() {
-    this.line = new JSONObject[2];
-    this.url = "http://data.metromobilite.fr/api/ficheHoraires/json?route=SEM:" + this.line_id;
-
-    this.stops = new JSONObject[2][];
-    this.stops_names = new String[2][];
-
-    for (int j = 0; j < 2; j++) {
-      this.line[j] = loadJSONObject(this.url).getJSONObject(str(j));
-
-      this.stops[j] = new JSONObject[this.line[j].getJSONArray("arrets").size()];
-      this.stops_names[j] = new String[this.line[j].getJSONArray("arrets").size()];
-
-      for (int i = 0; i < this.stops[j].length; i++) {
-        this.stops[j][i] = this.line[j].getJSONArray("arrets").getJSONObject(i);
-        this.stops_names[j][i] = this.line[j].getJSONArray("arrets").getJSONObject(i).getString("stopName");
-      }
-    }
-  }
-
-  public String[] listStops(int direction) {
-    if (direction < this.stops_names.length) {
-      return this.stops_names[direction];
-    } else {
-      return this.stops_names[0];
     }
   }
 

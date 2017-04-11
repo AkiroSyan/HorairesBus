@@ -19,7 +19,7 @@ void setup() {
   println("Line with terminus 0 : ");
   printArray(chosen.listStops(0));
 
-  print(chosen.getStop(1, "GRENOBLE, ANDRE ARGOUGES"));
+  print(chosen.getStop(1, "GRENOBLE, ESCLANGON"));
   
   printArray(chosen.nextBus());
 }

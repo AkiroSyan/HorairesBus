@@ -152,7 +152,7 @@ class BusLine {
     return false;
   }
 
-  public String toHuman(int s) {
+  private String toHuman(int s) {
     if (s < 60) {
       return "now";
     }

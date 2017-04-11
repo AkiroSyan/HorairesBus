@@ -146,7 +146,6 @@ Retour :
 Exemple :
 ```
 l = new Busline("C5");
-l.getStop(0, "GRENOBLE, ESCLANGON");
 printArray(l.terminus());
 
 # Affiche :

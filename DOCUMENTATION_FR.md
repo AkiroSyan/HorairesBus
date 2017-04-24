@@ -95,7 +95,7 @@ Retour :
 Exemple :
 ```
 l = new Busline("C5");
-l.getStop(0, "GRENOBLE, ESCLANGON");
+l.setStop(0, "GRENOBLE, ESCLANGON");
 printArray(l.nextBus());
 
 # Affiche :

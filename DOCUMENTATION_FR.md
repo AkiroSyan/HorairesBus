@@ -70,34 +70,18 @@ l.listStops(0);
 ```
 
 ***
-`getStop()` : permet de sélectionner un arrêt et de retourner l'objet JSON qui lui est associé.
+`setStop()` : Sélectionne un arrêt en précisant son nom et la direction de la ligne.
 
 Arguments :
 * _int_ __direction__ : spécifie la direction de la ligne, parmi `0` ou `1`.
 * _String_ __name__ : nom de l'arrêt, tel qu'il est référencé dans le tableau renvoyé par `listStops()`
 
-Retour :
-* _JSONObject_ : objet représentant l'arrêt.
 
 Exemple :
 ```
 l = new Busline("C5");
-print(l.getStop(0, "GRENOBLE, ESCLANGON"));
+l.setStop(0, "GRENOBLE, ESCLANGON");
 
-# Affiche :
-{
-  "parentStation": "SEM:GENESCLANGO",
-  "trips": [
-    67500,
-    68220,
-    68880,
-    69480
-  ],
-  "stopId": "SEM:4280",
-  "lon": 5.70683,
-  "stopName": "GRENOBLE, ESCLANGON",
-  "lat": 45.19126
-}
 ```
 
 ***

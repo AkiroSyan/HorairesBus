@@ -1,11 +1,11 @@
 /**
-* BusLine est une classe permettant d'interagir avec l'API de Métromobilité afin de récupérer les données concernant les transport
-* en commun de la ville de Grenoble.
-* Permet de récupérer toutes les lignes (bus et tram) de la ville, de sélectionner un arrêt et ensuite d'en afficher les horaires
-*
-* @author Tim Girard <tim@akiro.ovh>
-* @version 0.1
-*/
+ * BusLine est une classe permettant d'interagir avec l'API de Métromobilité afin de récupérer les données concernant les transport
+ * en commun de la ville de Grenoble.
+ * Permet de récupérer toutes les lignes (bus et tram) de la ville, de sélectionner un arrêt et ensuite d'en afficher les horaires
+ *
+ * @author Tim Girard <tim@akiro.ovh>
+ * @version 0.1
+ */
 class BusLine {
   private JSONObject[] line = new JSONObject[2]; //Tableau stockant la ligne dans les 2 directions
   private String[] lines_ids; //Tableau contenant les IDs des lignes SEMITAG
@@ -17,19 +17,19 @@ class BusLine {
   private JSONArray stops_times; //Tableau JSON contenant les horaires des lignes passant par l'arrêt choisi
   private JSONObject chosen_stop; //Objet contenant l'arrêt choisi
   private String chosen_stop_genid; //Identifiant SEMITAG de l'arrêt
-  
+
   /**
-  * Constructeur vide. Par défaut, actualise les lignes
-  */
+   * Constructeur vide. Par défaut, actualise les lignes
+   */
   BusLine() {
     updateLines(); //Met à jour les lignes de bus
   }
-  
+
   /**
-  * Constructeur. Charge en mémoire la ligne dont l'ID est passé en paramètre si celle-ci existe.
-  *
-  * @param id ID de la ligne à charger
-  */
+   * Constructeur. Charge en mémoire la ligne dont l'ID est passé en paramètre si celle-ci existe.
+   *
+   * @param id ID de la ligne à charger
+   */
   BusLine(String id) {
     updateLines();
     if (this.contains(lines_ids, id)) { // Si la ligne passée en paramètre existe, alors on la charge.
@@ -37,10 +37,10 @@ class BusLine {
       this.load();
     }
   }
-  
+
   /**
-  * Privée, appelée par le constructeur seulement. Charge en mémoire la ligne choisie.
-  */
+   * Privée, appelée par le constructeur seulement. Charge en mémoire la ligne choisie.
+   */
   private void load() {
     this.line = new JSONObject[2];
     this.url = "http://data.metromobilite.fr/api/ficheHoraires/json?route=SEM:" + this.line_id; //URL à appeler pour avoir les infos sur la ligne
@@ -60,12 +60,12 @@ class BusLine {
       }
     }
   }
-  
+
   /**
-  * Met à jour les lignes de bus disponibles.
-  *
-  * @throws NullPointerException Si le site est indisponible
-  */
+   * Met à jour les lignes de bus disponibles.
+   *
+   * @throws NullPointerException Si le site est indisponible
+   */
   public void updateLines() throws NullPointerException { //Attention : Renvoie une erreur si pas de conenxion
     JSONArray lines = loadJSONArray("http://data.metromobilite.fr/api/routers/default/index/routes"); //URL à appeler pour avoir toutes les lignes
     StringList lines_buffer = new StringList();  //Liste "tampon" pour ajouter au fur et à mesure les lignes triées
@@ -80,39 +80,40 @@ class BusLine {
     lines_buffer.sort();
     lines_ids = lines_buffer.array();
   }
-  
+
   /**
-  * Retourne les IDs de toutes les lignes disponibles.
-  * 
-  * @return Tableau contenant les IDs des lignes disponibles
-  */
+   * Retourne les IDs de toutes les lignes disponibles.
+   * 
+   * @return Tableau contenant les IDs des lignes disponibles
+   */
   public String[] getLines() { 
     return this.lines_ids;
   }
-  
+
   /**
-  * Liste les arrêts de la ligne choisie dans la direction donnée.
-  *
-  * @param direction Direction de la ligne, doit être 0 ou 1
-  *
-  * @return Tableau contenant les noms de tous les arrêts
-  */
+   * Liste les arrêts de la ligne choisie dans la direction donnée.
+   *
+   * @param direction Direction de la ligne, doit être 0 ou 1
+   *
+   * @return Tableau contenant les noms de tous les arrêts
+   */
   public String[] listStops(int direction) {
-    if (direction < this.stops_names.length) { //Si une direction valide est fournie, on retourne la ligne correspondante
+    if (this.line_id == null)
+      return null;
+
+    if (direction == 0 || direction == 1) { //Si une direction valide est fournie, on retourne la ligne correspondante
       return this.stops_names[direction];
-    } else {
-      return this.stops_names[0];
-    }
+    } else return null;
   }
 
   /**
-  * Sélectionne l'arrêt de bus choisi dans la direction choisie.
-  *
-  * @param direction Direction de la ligne
-  * @param name Nom de l'arrêt
-  */
+   * Sélectionne l'arrêt de bus choisi dans la direction choisie.
+   *
+   * @param direction Direction de la ligne
+   * @param name Nom de l'arrêt
+   */
   public void setStop(int direction, String name) {
-    if (direction < this.stops.length && this.contains(this.stops_names[direction], name)) { //Si la direction est valide et que la ligne contient l'arrêt
+    if (this.line_id != null && (direction == 0 || direction == 1)&& this.contains(this.stops_names[direction], name)) { //Si la direction est valide et que la ligne contient l'arrêt
       for (JSONObject stop : this.stops[direction]) {
         if (stop.getString("stopName").equals(name)) { //On parcourt jusqu'à trouver l'arrêt et on le retourne
           this.chosen_stop = stop;
@@ -121,12 +122,12 @@ class BusLine {
       }
     }
   }
-  
+
   /**
-  * Renvoie un tableau JSON contenant les horaires des prochains bus passant par l'arrêt choisi.
-  *
-  * @return Tableau JSON contenant les horaires de toutes les lignes de bus passant par l'arrêt
-  */
+   * Renvoie un tableau JSON contenant les horaires des prochains bus passant par l'arrêt choisi.
+   *
+   * @return Tableau JSON contenant les horaires de toutes les lignes de bus passant par l'arrêt
+   */
   public JSONArray nextBus() {
     if (this.chosen_stop != null && this.chosen_stop_genid != "") { //Si un arrêt est bien sélectionné
 
@@ -171,31 +172,37 @@ class BusLine {
 
       return this.stops_times;
     } else {
-      return new JSONArray();
+      return null;
     }
   }
-  
+
   /**
-  * Renvoie un tableau contenant le teminus de la ligne pour chaque direction.
-  *
-  * @return Tableau contenant le teminus de la ligne pour chaque direction
-  */
+   * Renvoie un tableau contenant le teminus de la ligne pour chaque direction.
+   *
+   * @return Tableau contenant le teminus de la ligne pour chaque direction
+   */
   public String[] terminus() {
+    if (this.line_id == null)
+      return null;
+
     String[] terminus = new String[2];
     terminus[0] = this.stops_names[0][this.stops_names[0].length -1];
     terminus[1] = this.stops_names[1][this.stops_names[1].length -1];
     return terminus;
   }
-  
+
   /**
-  * Vérfiie si un élément est présent dans une collection.
-  *
-  * @param collection Tableau dans lequel chercher l'élement
-  * @param element Élément à chercher
-  *
-  * @return True si l'élément est présent
-  */
+   * Vérfiie si un élément est présent dans une collection.
+   *
+   * @param collection Tableau dans lequel chercher l'élement
+   * @param element Élément à chercher
+   *
+   * @return True si l'élément est présent
+   */
   private boolean contains(String[] collection, String element) {
+    if (collection == null || element == null) 
+      return false;
+
     for (int i = 0; i < collection.length; i++) {
       if (collection[i].equals(element)) {
         return true;
@@ -203,16 +210,18 @@ class BusLine {
     }
     return false;
   }
-  
+
   /**
-  * Convertit le temps en nombre de secondes depuis minuit vers un temps lisible par un humain de la forme hh:mm
-  *
-  * @param s Nombre de secondes à convertir
-  *
-  * @return Chaîne de caractère représentant le temps converti
-  */
+   * Convertit le temps en nombre de secondes depuis minuit vers un temps lisible par un humain de la forme hh:mm
+   *
+   * @param s Nombre de secondes à convertir
+   *
+   * @return Chaîne de caractère représentant le temps converti
+   */
   private String toHuman(int s) {
-    if (s < 60) {
+    if (s <= 0) {
+      return "missed";
+    } else if (s > 0 && s < 60) {
       return "now";
     }
     int h = s / 3600; //Conversion du temps en nombre de secondes depuis minuit en hh:mm

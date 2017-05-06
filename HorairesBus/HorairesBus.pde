@@ -2,8 +2,8 @@ BusLine line;
 BusLine chosen;
 
 int direction = 0;
-int lineNumber = 40;
-int stopNumber = 14;
+String lineName = "C5";
+int stopNumber = 11;
 
 void setup() {
 
@@ -17,9 +17,9 @@ void setup() {
   
   String[] theline = line.getLines();
   
-  println("Ligne choisie : ", theline[lineNumber]);
+  println("Ligne choisie : ", lineName);
   
-  chosen = new BusLine(theline[lineNumber]);
+  chosen = new BusLine(lineName);
   
   String[] stops = chosen.listStops(direction);
   

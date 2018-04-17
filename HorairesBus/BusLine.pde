@@ -3,7 +3,7 @@
  * en commun de la ville de Grenoble.
  * Permet de récupérer toutes les lignes (bus et tram) de la ville, de sélectionner un arrêt et ensuite d'en afficher les horaires
  *
- * @author Tim Girard <tim@akiro.ovh>
+ * @author Tim G.
  * @version 0.1
  */
 class BusLine {
